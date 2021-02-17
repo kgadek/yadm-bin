@@ -51,6 +51,7 @@ GIT_CRYPT_PROGRAM="git-crypt"
 TRANSCRYPT_PROGRAM="transcrypt"
 J2CLI_PROGRAM="j2"
 ENVTPL_PROGRAM="envtpl"
+MST_PROGRAM="mst"
 ESH_PROGRAM="esh"
 LSB_RELEASE_PROGRAM="lsb_release"
 
@@ -340,6 +341,8 @@ function choose_template_cmd() {
     echo "template_j2cli"
   elif [ "$kind" = "envtpl" ] || [ "$kind" = "j2" ] && envtpl_available; then
     echo "template_envtpl"
+  elif [ "$kind" = "mst" ] && mst_available; then
+    echo "template_mst"
   else
     return # this "kind" of template is not supported
   fi
@@ -473,6 +476,32 @@ function template_envtpl() {
   YADM_DISTRO="$local_distro" \
   YADM_SOURCE="$input"        \
   "$ENVTPL_PROGRAM" --keep-template "$input" -o "$temp_file"
+
+  if [ -f "$temp_file" ] ; then
+    copy_perms "$input" "$temp_file"
+    mv -f "$temp_file" "$output"
+  fi
+}
+
+function template_mst() {
+  input="$1"
+  output="$2"
+  temp_file="${output}.$$.$RANDOM"
+
+  "${MST_PROGRAM}"         "${input}" \
+  YADM_CLASS               "${local_class}" \
+  "class_${local_class}"   "true" \
+  YADM_OS                  "${local_system}" \
+  "os_${local_system}"     "true" \
+  YADM_HOSTNAME            "${local_host}" \
+  "hostname_${local_host}" "true" \
+  YADM_USER                "${local_user}" \
+  "user_${local_user}"     "true" \
+  YADM_DISTRO              "${local_distro}" \
+  "distro_${local_distro}" "true" \
+  YADM_SOURCE              "${input}" \
+  "input_${input}"         "true" \
+  > "$temp_file"
 
   if [ -f "$temp_file" ] ; then
     copy_perms "$input" "$temp_file"
@@ -2163,6 +2192,10 @@ function envtpl_available() {
 }
 function esh_available() {
   command -v "$ESH_PROGRAM" &> /dev/null && return
+  return 1
+}
+function mst_available() {
+  command -v "$MST_PROGRAM" &> /dev/null && return
   return 1
 }
 function readlink_available() {
