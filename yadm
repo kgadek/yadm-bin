@@ -694,6 +694,19 @@ function bootstrap() {
   # GIT_DIR should not be set for user's bootstrap code
   unset GIT_DIR
 
+  local local_class
+  local local_system
+  local local_host
+  local local_user
+  local local_distro
+  set_local_alt_values
+
+  export YADM_CLASS="$local_class"
+  export YADM_OS="$local_system"
+  export YADM_HOSTNAME="$local_host"
+  export YADM_USER="$local_user"
+  export YADM_DISTRO="$local_distro"
+
   echo "Executing $YADM_BOOTSTRAP"
   exec "$YADM_BOOTSTRAP"
 
