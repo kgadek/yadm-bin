@@ -488,19 +488,19 @@ function template_mst() {
   output="$2"
   temp_file="${output}.$$.$RANDOM"
 
-  "${MST_PROGRAM}"         "${input}" \
-  YADM_CLASS               "${local_class}" \
-  "class_${local_class}"   "true" \
-  YADM_OS                  "${local_system}" \
-  "os_${local_system}"     "true" \
-  YADM_HOSTNAME            "${local_host}" \
-  "hostname_${local_host}" "true" \
-  YADM_USER                "${local_user}" \
-  "user_${local_user}"     "true" \
-  YADM_DISTRO              "${local_distro}" \
-  "distro_${local_distro}" "true" \
-  YADM_SOURCE              "${input}" \
-  "input_${input}"         "true" \
+  "${MST_PROGRAM}"                          "${input}" \
+  YADM_SOURCE                               "${input}" \
+  "input_${input}"                          "true" \
+  YADM_CLASS                                "${local_class}" \
+  "class_${local_class//[^[:alnum:]]/_}"    "true" \
+  "os_${local_system//[^[:alnum:]]/_}"      "true" \
+  YADM_OS                                   "${local_system}" \
+  "hostname_${local_host//[^[:alnum:]]/_}"  "true" \
+  YADM_HOSTNAME                             "${local_host}" \
+  "user_${local_user//[^[:alnum:]]/_}"      "true" \
+  YADM_USER                                 "${local_user}" \
+  "distro_${local_distro//[^[:alnum:]]/_}"  "true" \
+  YADM_DISTRO                               "${local_distro}" \
   > "$temp_file"
 
   if [ -f "$temp_file" ] ; then
